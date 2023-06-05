@@ -68,6 +68,13 @@ export default defineComponent({
           field: "date",
           width: "10%",
           sortable: true,
+          display: function (row) {
+            let objectDate = new Date(row.date);
+            let day = objectDate.getDate();
+            let month = objectDate.getMonth();
+            let year = objectDate.getFullYear();
+            return day + "/" + month + "/" + year;
+          },
         },
         {
           label: "CLIENTE COD",
@@ -78,6 +85,13 @@ export default defineComponent({
           label: "VISIBILE FINO AL",
           field: "due_date",
           width: "5%",
+          display: function (row) {
+            let objectDate = new Date(row.due_date);
+            let day = objectDate.getDate();
+            let month = objectDate.getMonth();
+            let year = objectDate.getFullYear();
+            return day + "/" + month + "/" + year;
+          },
         },
         {
           label: "TIPO FILE",
