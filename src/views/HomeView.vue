@@ -74,7 +74,7 @@ export default defineComponent({
           display: function (row) {
             let objectDate = new Date(row.date);
             let day = objectDate.getDate();
-            let month = objectDate.getMonth();
+            let month = objectDate.getMonth() +1;
             let year = objectDate.getFullYear();
             return day + "/" + month + "/" + year;
           },
