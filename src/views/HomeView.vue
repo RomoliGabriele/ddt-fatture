@@ -24,6 +24,7 @@ const from = ref(); // date
 const to = ref(); // date
 
 var rows = [];
+var customer_id = 1;
 
 export default defineComponent({
   name: "App",
@@ -101,46 +102,71 @@ export default defineComponent({
     const doSearch = async (offset, limit, order, sort) => {
       table.isLoading = true;
       // Start use axios to get data from Server
-      let url =
-        "http://localhost:8010/api/documents?offset=" +
-        offset +
-        "&limit=" +
-        limit +
-        "&order=" +
-        order +
-        "&sort=" +
-        sort;
+      let url = "";
+      if (customer_id != 0) {
+        url =
+          "http://localhost:8010/api/documents/" +
+          customer_id +
+          "?offset=" +
+          offset +
+          "&limit=" +
+          limit +
+          "&order=" +
+          order +
+          "&sort=" +
+          sort;
+      } else {
+        url =
+          "http://localhost:8010/api/documents?offset=" +
+          offset +
+          "&limit=" +
+          limit +
+          "&order=" +
+          order +
+          "&sort=" +
+          sort;
+      }
       let response = await axios.get(url);
-      console.log();
-      table.rows = computed(() => {
-        if (!from.value || !to.value) {
-          return response.data.rows.filter(
-            (x) =>
-              String(x.id).toLowerCase().includes(id.value.toLowerCase()) &&
-              String(x.is_read)
-                .toLowerCase()
-                .includes(is_read.value.toLowerCase()) &&
-              String(x.type).toLowerCase().includes(type.value.toLowerCase())
-          );
-        } else {
-          return response.data.rows.filter(
-            (x) =>
-              String(x.id).toLowerCase().includes(id.value.toLowerCase()) &&
-              String(x.is_read)
-                .toLowerCase()
-                .includes(is_read.value.toLowerCase()) &&
-              String(x.type).toLowerCase().includes(type.value.toLowerCase()) &&
-              Date.parse(x.date) >= Date.parse(from.value) &&
-              Date.parse(x.date) <= Date.parse(to.value)
-          );
-        }
-      });
-      table.totalRecordCount = response.data.total;
-      table.sortable.order = order;
-      table.sortable.sort = sort;
-      table.isLoading = false;
-      table.page = offset / limit + 1;
-      console.log(table.page);
+      console.log(response);
+      if (response.data.message) {
+        table.rows = [];
+        table.totalRecordCount = 0;
+        table.isLoading = false;
+        alert(response.data.message);
+        return;
+      } else {
+        table.rows = computed(() => {
+          if (!from.value || !to.value) {
+            return response.data.rows.filter(
+              (x) =>
+                String(x.id).toLowerCase().includes(id.value.toLowerCase()) &&
+                String(x.is_read)
+                  .toLowerCase()
+                  .includes(is_read.value.toLowerCase()) &&
+                String(x.type).toLowerCase().includes(type.value.toLowerCase())
+            );
+          } else {
+            return response.data.rows.filter(
+              (x) =>
+                String(x.id).toLowerCase().includes(id.value.toLowerCase()) &&
+                String(x.is_read)
+                  .toLowerCase()
+                  .includes(is_read.value.toLowerCase()) &&
+                String(x.type)
+                  .toLowerCase()
+                  .includes(type.value.toLowerCase()) &&
+                Date.parse(x.date) >= Date.parse(from.value) &&
+                Date.parse(x.date) <= Date.parse(to.value)
+            );
+          }
+        });
+        table.totalRecordCount = response.data.total;
+        table.sortable.order = order;
+        table.sortable.sort = sort;
+        table.isLoading = false;
+        table.page = offset / limit + 1;
+        console.log(table.page);
+      }
       // End use axios to get data from Server
     };
 
