@@ -1,21 +1,24 @@
 <template>
-  <table-lite
-    :is-loading="table.isLoading"
-    :columns="table.columns"
-    :rows="table.rows"
-    :total="table.totalRecordCount"
-    :sortable="table.sortable"
-    :page="table.page"
-    @do-search="doSearch"
-    @VnodeMounted="initTable"
-    @is-finished="table.isLoading = false"
-  ></table-lite>
+  <div style="padding: 20px">
+    <table-lite
+      :is-loading="table.isLoading"
+      :columns="table.columns"
+      :rows="table.rows"
+      :total="table.totalRecordCount"
+      :sortable="table.sortable"
+      :page="table.page"
+      @do-search="doSearch"
+      @VnodeMounted="initTable"
+      @is-finished="table.isLoading = false"
+    ></table-lite>
+  </div>
 </template>
 
 <script>
 import { defineComponent, reactive, ref, computed, createApp, h } from "vue";
 import TableLite from "vue3-table-lite";
 import axios from "axios";
+import { API_KEY } from "../../config.js";
 
 const id = ref(""); // Search text
 const is_read = ref(""); // select
@@ -24,7 +27,7 @@ const from = ref(); // date
 const to = ref(); // date
 
 var rows = [];
-var customer_id = 1;
+var customer_id = 0;
 
 export default defineComponent({
   name: "App",
@@ -140,7 +143,11 @@ export default defineComponent({
           "&sort=" +
           sort;
       }
-      let response = await axios.get(url);
+      let response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        },
+      });
       console.log(response);
       if (response.data.message) {
         table.rows = [];
