@@ -19,6 +19,7 @@ import { defineComponent, reactive, ref, computed, createApp, h } from "vue";
 import TableLite from "vue3-table-lite";
 import axios from "axios";
 import { API_KEY } from "../../config.js";
+import CryptoJs from "crypto-js";
 
 const id = ref(""); // Search text
 const is_read = ref(""); // select
@@ -27,7 +28,7 @@ const from = ref(); // date
 const to = ref(); // date
 
 var rows = [];
-var customer_id = 0;
+var customer_id = 2;
 
 export default defineComponent({
   name: "App",
@@ -74,7 +75,7 @@ export default defineComponent({
           display: function (row) {
             let objectDate = new Date(row.date);
             let day = objectDate.getDate();
-            let month = objectDate.getMonth() +1;
+            let month = objectDate.getMonth() + 1;
             let year = objectDate.getFullYear();
             return day + "/" + month + "/" + year;
           },
@@ -120,34 +121,31 @@ export default defineComponent({
       table.isLoading = true;
       // Start use axios to get data from Server
       let url = "";
-      if (customer_id != 0) {
-        url =
-          "http://localhost:8010/api/documents/" +
-          customer_id +
-          "?offset=" +
-          offset +
-          "&limit=" +
-          limit +
-          "&order=" +
-          order +
-          "&sort=" +
-          sort;
-      } else {
-        url =
-          "http://localhost:8010/api/documents?offset=" +
-          offset +
-          "&limit=" +
-          limit +
-          "&order=" +
-          order +
-          "&sort=" +
-          sort;
-      }
-      let response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
+      customer_id = CryptoJs.AES.encrypt(customer_id.toString(), "asdfghjkl", {
+        mode: CryptoJs.mode.ECB,
+      }).toString();
+
+      url =
+        "http://localhost:8010/api/documents/?offset=" +
+        offset +
+        "&limit=" +
+        limit +
+        "&order=" +
+        order +
+        "&sort=" +
+        sort;
+
+      let response = await axios.post(
+        url,
+        {
+          id: customer_id,
         },
-      });
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(response);
       if (response.data.message) {
         table.rows = [];
