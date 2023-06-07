@@ -19,7 +19,7 @@ import { defineComponent, reactive, ref, computed, createApp, h } from "vue";
 import TableLite from "vue3-table-lite";
 import axios from "axios";
 import { API_KEY } from "../../config.js";
-import CryptoJs from "crypto-js";
+import CryptoJS from "crypto-js";
 
 const id = ref(""); // Search text
 const is_read = ref(""); // select
@@ -28,7 +28,7 @@ const from = ref(); // date
 const to = ref(); // date
 
 var rows = [];
-var customer_id = 2;
+var customer_id = 1;
 
 export default defineComponent({
   name: "App",
@@ -121,9 +121,7 @@ export default defineComponent({
       table.isLoading = true;
       // Start use axios to get data from Server
       let url = "";
-      customer_id = CryptoJs.AES.encrypt(customer_id.toString(), "asdfghjkl", {
-        mode: CryptoJs.mode.ECB,
-      }).toString();
+      customer_id = CryptoJS.AES.encrypt(customer_id.toString(), API_KEY).toString();
 
       url =
         "http://localhost:8010/api/documents/?offset=" +
